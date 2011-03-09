@@ -28,17 +28,34 @@ class QuestionParser
   def parse_company company
     questions = []
       
-    if company['offices'] && 
+    unless company['offices'].nil? || company['offices'].length != 1 
       office = company['offices'][0]
       category = CATEGORIES[company['category_code']]
       month_name = Date::MONTHNAMES[company['founded_month']]
       questions.push("This #{office['city']}, #{office['state_code']} based #{category} company was founded in #{month_name} of #{company['founded_year']}.")
     end
-      
+    
+    unless company['acquisition'].nil? 
+      acquisition = company['acquisition']
+      acquiring_company = acquisition['acquiring_company']
+      month_name = Date::MONTHNAMES[acquisition['acquired_month']]
+      questions.push("In #{month_name} of #{acquisition['acquired_year']} this company was acquired by #{acquiring_company['name']} for a reported $#{acquisition['price_amount']}.")
+    end
+    
+#    unless company['competitions'].nil?
+#      founders = 
+#      
+#      questions.push("Founded in #{company['founded_year']} by #{founders_grammar} this company counts #{competitors_grammar} as competition.")
+#    end
+
+  end
+  
+  def list_grammar(list, last_join='and')
+    
   end
 end
 
-json = JSON.parse(IO.read('/Users/mnitheib/Desktop/jellyfish.js'))
+json = JSON.parse(IO.read(ARGV[0]))
 qp = QuestionParser.new()
 questions = qp.parse_company(json)
 
